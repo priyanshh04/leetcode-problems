@@ -1,0 +1,28 @@
+import java.util.PriorityQueue;
+
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+
+        // Min-heap comparing node values
+        PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> a.val - b.val);
+
+        // Add all list heads
+        for (ListNode node : lists) {
+            if (node != null) pq.add(node);
+        }
+
+        ListNode dummy = new ListNode(0);
+        ListNode curr = dummy;
+
+        while (!pq.isEmpty()) {
+            ListNode min = pq.poll();  // smallest node
+            curr.next = min;
+            curr = curr.next;
+
+            if (min.next != null) pq.add(min.next);
+        }
+
+        return dummy.next;
+    }
+}
