@@ -1,0 +1,10 @@
+class Solution {
+    public TreeNode searchBST(TreeNode root, int val) {
+        TreeNode cur = root;
+        while (cur != null) {
+            if (cur.val == val) return cur;
+            cur = (val < cur.val) ? cur.left : cur.right;
+        }
+        return null;
+    }
+}
