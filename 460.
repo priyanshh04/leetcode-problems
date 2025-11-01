@@ -1,0 +1,63 @@
+import java.util.*;
+
+class LFUCache {
+    private int capacity;
+    private int minFreq;
+    private Map<Integer, Integer> val;          // key -> value
+    private Map<Integer, Integer> freq;         // key -> freq
+    private Map<Integer, LinkedHashSet<Integer>> buckets; // freq -> keys (LRU order)
+
+    public LFUCache(int capacity) {
+        this.capacity = capacity;
+        this.minFreq = 0;
+        this.val = new HashMap<>();
+        this.freq = new HashMap<>();
+        this.buckets = new HashMap<>();
+    }
+
+    public int get(int key) {
+        if (!val.containsKey(key)) return -1;
+        increaseFreq(key);
+        return val.get(key);
+    }
+
+    public void put(int key, int value) {
+        if (capacity == 0) return;
+
+        if (val.containsKey(key)) {
+            val.put(key, value);
+            increaseFreq(key);
+            return;
+        }
+
+        if (val.size() >= capacity) {
+            // evict least frequently used key (and least recently used among them)
+            LinkedHashSet<Integer> set = buckets.get(minFreq);
+            int evictKey = set.iterator().next();
+            set.remove(evictKey);
+            if (set.isEmpty()) buckets.remove(minFreq);
+            val.remove(evictKey);
+            freq.remove(evictKey);
+        }
+
+        // insert new key with freq = 1
+        val.put(key, value);
+        freq.put(key, 1);
+        buckets.computeIfAbsent(1, k -> new LinkedHashSet<>()).add(key);
+        minFreq = 1;
+    }
+
+    private void increaseFreq(int key) {
+        int f = freq.get(key);
+        LinkedHashSet<Integer> set = buckets.get(f);
+        set.remove(key);
+        if (set.isEmpty()) {
+            buckets.remove(f);
+            if (f == minFreq) minFreq++;
+        }
+
+        int nf = f + 1;
+        freq.put(key, nf);
+        buckets.computeIfAbsent(nf, k -> new LinkedHashSet<>()).add(key);
+    }
+}
