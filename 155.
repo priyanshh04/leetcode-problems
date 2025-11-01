@@ -1,0 +1,35 @@
+class MinStack {
+    private Deque<Integer> stack;
+    private Deque<Integer> mins;
+
+    public MinStack() {
+        stack = new ArrayDeque<>();
+        mins = new ArrayDeque<>();
+    }
+
+    public void push(int val) {
+        stack.push(val);
+        // push into mins either val if it's new min, or repeat current min
+        if (mins.isEmpty() || val <= mins.peek()) {
+            mins.push(val);
+        } else {
+            mins.push(mins.peek());
+        }
+    }
+
+    public void pop() {
+        if (stack.isEmpty()) return;
+        stack.pop();
+        mins.pop();
+    }
+
+    public int top() {
+        if (stack.isEmpty()) throw new RuntimeException("Stack is empty");
+        return stack.peek();
+    }
+
+    public int getMin() {
+        if (mins.isEmpty()) throw new RuntimeException("Stack is empty");
+        return mins.peek();
+    }
+}
