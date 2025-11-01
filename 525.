@@ -1,0 +1,22 @@
+class Solution {
+    public int findMaxLength(int[] nums) {
+        Map<Integer, Integer> firstIndex = new HashMap<>();
+        firstIndex.put(0, -1); // prefix sum 0 at virtual index -1
+
+        int maxLen = 0;
+        int sum = 0; // treat 0 as -1, 1 as +1
+
+        for (int i = 0; i < nums.length; i++) {
+            sum += (nums[i] == 1) ? 1 : -1;
+
+            if (firstIndex.containsKey(sum)) {
+                int prevIndex = firstIndex.get(sum);
+                maxLen = Math.max(maxLen, i - prevIndex);
+            } else {
+                // store first occurrence of this prefix sum
+                firstIndex.put(sum, i);
+            }
+        }
+        return maxLen;
+    }
+}
