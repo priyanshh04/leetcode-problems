@@ -1,0 +1,60 @@
+class Solution {
+    public int strongPasswordChecker(String s) {
+        int n = s.length();
+
+        boolean hasLower = false, hasUpper = false, hasDigit = false;
+        for (char c : s.toCharArray()) {
+            if (Character.isLowerCase(c)) hasLower = true;
+            else if (Character.isUpperCase(c)) hasUpper = true;
+            else if (Character.isDigit(c)) hasDigit = true;
+        }
+        int missingTypes = (hasLower ? 0 : 1) + (hasUpper ? 0 : 1) + (hasDigit ? 0 : 1);
+
+        // Count repeating runs
+        int replacements = 0;
+        // counts of runs by L % 3 category to help deletion strategy
+        int[] mods = new int[3];
+
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            while (j < n && s.charAt(j) == s.charAt(i)) j++;
+            int len = j - i;
+            if (len >= 3) {
+                replacements += len / 3;
+                mods[len % 3]++; // how many runs fall into each modulo bucket
+            }
+            i = j;
+        }
+
+        if (n < 6) {
+            return Math.max(missingTypes, 6 - n);
+        } else if (n <= 20) {
+            return Math.max(missingTypes, replacements);
+        } else {
+            int deletions = n - 20;
+            int del = deletions;
+
+            // Use deletions to reduce replacements greedily
+            // 1) reduce runs with mod 0 by 1 deletion each (cost 1) to reduce one replacement
+            int use = Math.min(mods[0], del);
+            replacements -= use;
+            del -= use;
+
+            // 2) reduce runs with mod 1 by 2 deletions each (cost 2) to reduce one replacement
+            use = Math.min(mods[1], del / 2);
+            replacements -= use;
+            del -= use * 2;
+
+            // 3) the rest (mod 2 and leftovers): every 3 deletions reduce one replacement
+            if (del > 0) {
+                int reduce = del / 3;
+                replacements -= reduce;
+                del -= reduce * 3;
+            }
+
+            // total steps = deletions performed + max(missingTypes, remaining replacements)
+            return deletions + Math.max(missingTypes, Math.max(0, replacements));
+        }
+    }
+}
