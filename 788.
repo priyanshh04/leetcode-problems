@@ -1,0 +1,14 @@
+class Solution:
+    def rotatedDigits(self, N: int) -> int:
+        def is_good(x: int) -> bool:
+            changed = False
+            while x > 0:
+                d = x % 10
+                x //= 10
+                if d in (3, 4, 7):
+                    return False
+                if d in (2, 5, 6, 9):
+                    changed = True
+            return changed
+
+        return sum(1 for x in range(1, N+1) if is_good(x))
