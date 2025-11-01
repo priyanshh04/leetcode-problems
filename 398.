@@ -1,0 +1,18 @@
+class Solution {
+    private final Map<Integer, List<Integer>> idx;
+    private final Random rand;
+
+    public Solution(int[] nums) {
+        idx = new HashMap<>();
+        rand = new Random();
+        for (int i = 0; i < nums.length; i++) {
+            idx.computeIfAbsent(nums[i], k -> new ArrayList<>()).add(i);
+        }
+    }
+
+    public int pick(int target) {
+        List<Integer> list = idx.get(target);
+        // assume target always exists per problem constraints
+        return list.get(rand.nextInt(list.size()));
+    }
+}
